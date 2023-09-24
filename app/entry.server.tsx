@@ -11,6 +11,7 @@ import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import "~/utils/env.server.ts";
 
 const ABORT_DELAY = 5_000;
 
@@ -61,7 +62,7 @@ function handleBotRequest(
           resolve(
             new Response(stream, {
               headers: responseHeaders,
-              status: responseStatusCode,
+              status: responseStatusCode
             })
           );
 
@@ -78,7 +79,7 @@ function handleBotRequest(
           if (shellRendered) {
             console.error(error);
           }
-        },
+        }
       }
     );
 
@@ -111,7 +112,7 @@ function handleBrowserRequest(
           resolve(
             new Response(stream, {
               headers: responseHeaders,
-              status: responseStatusCode,
+              status: responseStatusCode
             })
           );
 
@@ -128,7 +129,7 @@ function handleBrowserRequest(
           if (shellRendered) {
             console.error(error);
           }
-        },
+        }
       }
     );
 

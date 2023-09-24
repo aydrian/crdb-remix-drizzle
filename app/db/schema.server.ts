@@ -1,17 +1,17 @@
 import { sql } from "drizzle-orm";
-import { text, timestamp, pgTable, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const user = pgTable("users", {
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  email: text("email").notNull(),
   id: uuid("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   name: text("name"),
-  email: text("email").notNull(),
   password: text("password").notNull(),
   role: text("role").$type<"admin" | "customer">(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow()
