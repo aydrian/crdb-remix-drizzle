@@ -1,41 +1,44 @@
-import type { MetaFunction } from "@remix-run/node";
+import {
+  type LoaderFunctionArgs,
+  type MetaFunction,
+  json
+} from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+
+import { db } from "~/db/config.server";
 
 export const meta: MetaFunction = () => {
   return [
     { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { content: "Welcome to Remix!", name: "description" }
   ];
 };
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const lists = await db.query.lists.findMany();
+  const countDowns = await db.query.countDowns.findMany({
+    orderBy: (countDowns, { asc }) => [asc(countDowns.date)],
+    with: { list: true }
+  });
+  return json({ countDowns, lists });
+}
+
 export default function Index() {
+  const { countDowns, lists } = useLoaderData<typeof loader>();
+  console.log({ countDowns, lists });
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
+    <>
+      <section className="rounded-md bg-[#f5f5f5] p-4 shadow-md">
+        <h2>Section</h2>
+        <ul>
+          {countDowns.map((countdown) => (
+            <li key={countdown.id}>
+              {countdown.name} {countdown.date}{" "}
+              {countdown.list?.name ?? "No list"}
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
   );
 }

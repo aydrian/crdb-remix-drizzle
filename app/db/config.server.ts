@@ -1,8 +1,10 @@
 import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
+// import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
-const sql = postgres(process.env.DATABASE_URL, { max: 1 });
-const db = drizzle(sql);
+import * as schema from "./schema.server";
 
-await migrate(db, { migrationsFolder: "./app/db/migrations" });
+const sql = postgres(process.env.DATABASE_URL, { max: 1 });
+export const db = drizzle(sql, { schema });
+
+// await migrate(db, { migrationsFolder: "./app/db/migrations" });
